@@ -1,13 +1,15 @@
 #pragma once
 #include <iostream>
+#include <vector>
 #include <WinSock2.h>
 #include <winsock.h>
 
 class Server {
-	SOCKET m_server_socket;
-	SOCKET m_socket_dg_1, m_socket_dg_2;
-	SOCKET m_socket_vchanel_1, m_socket_vchanel_2;
 	WSADATA m_WSAData;
+	SOCKET m_server_socket;
+	std::vector<SOCKET> m_sockets;
+	std::vector<sockaddr_in> m_addrs;
+	unsigned short m_port;
 public:
 	char m_LogBuffer[128];
 	Server();
