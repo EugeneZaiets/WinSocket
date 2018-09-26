@@ -9,7 +9,7 @@ class Server {
 	SOCKET m_server_socket;
 	std::vector<SOCKET> m_sockets;
 	std::vector<sockaddr_in> m_addrs;
-	unsigned short m_port;
+	unsigned short m_port = 8888;
 public:
 	char m_LogBuffer[128];
 	Server();
