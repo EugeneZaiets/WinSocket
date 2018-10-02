@@ -7,10 +7,10 @@
 class Server {
 	WSADATA m_WSAData;
 	SOCKET m_server_socket;
-	std::vector<SOCKET> m_sockets;
-	std::vector<sockaddr_in> m_addrs;
+	sockaddr_in m_server_addr;
 	unsigned short m_port = 8888;
 public:
+	unsigned char key = 0;
 	char m_LogBuffer[128];
 	Server();
 	~Server();
