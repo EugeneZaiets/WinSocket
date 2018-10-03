@@ -9,8 +9,10 @@ int main()
 	}
 	if (server.ServerStop()){
 		std::cout << "Server has been shut down successfully.\n";
+		std::cin.get();
 	} else {
 		std::cout << "Server has NOT been shut down successfully.\n";
+		std::cin.get();
 	};
 	return 0;
 }
