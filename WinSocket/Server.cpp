@@ -71,24 +71,21 @@ void Server::handle() {
 			closesocket(m_server_socket);
 			break;
 		}
-		closesocket(m_server_socket);
+		//closesocket(m_server_socket);
 		SendFile();
 		closesocket(m_client_socket);
 	}
 };
 
 void Server::SendFile() {
-	/*testfile = fopen("C:\\Users\gekaz\source\repos\WinSocket\WinSocket\picture.png", "rb");
-	char* */
-	file->open("C:\\Users\gekaz\source\repos\WinSocket\WinSocket\picture.png", std::ios::binary | std::ios::ate);
-	if (file->is_open()) {
-		int filesize = (int)file->tellg();
+	file.open("picture.png", std::ios::binary | std::ios::ate);
+	if (file.is_open()) {
+		long filesize = file.tellg();
 		char* buffer = new char[filesize];
-		file->seekg(std::ios::beg);
-		file->read(buffer, filesize);
-		m_iResult = send(m_client_socket, "picture.png", strlen("picture.png"), 0);
+		m_iResult = send(m_client_socket, buffer, filesize, 0);
 		if (m_iResult == SOCKET_ERROR) {
 			std::cout << "Send is failed. Error :" << WSAGetLastError() << std::endl;
+			delete[] buffer;
 			return;
 		}
 		else std::cout << "Sent bytes : " << m_iResult << std::endl;
@@ -97,7 +94,10 @@ void Server::SendFile() {
 		{
 			std::cout << "Shutdown is failed. Error :" << WSAGetLastError() << std::endl;
 			closesocket(m_client_socket);
+			delete[] buffer;
 			return;
 		}
-	} else std::cout << "File didn't open. Error :" << GetLastError() << std::endl;
+		else delete[] buffer;
+	}
+	else std::cout << "File didn't open. Error :" << GetLastError() << std::endl;
 }

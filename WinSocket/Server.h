@@ -13,7 +13,7 @@ class Server {
 public:
 	int m_iResult;
 	const char* sendbuf = nullptr;
-	std::ifstream* file;
+	std::ifstream file;
 	FILE* testfile;
 	unsigned char key = 0;
 	char m_LogBuffer[128];
