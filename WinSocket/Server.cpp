@@ -1,9 +1,11 @@
-#include "Server.h"
-#include <conio.h>
 #pragma warning(disable : 4996)
 #pragma comment(lib, "ws2_32.lib")
-
-Server::Server() {};
+#include "Server.h"
+#include <locale>
+#define UNICODE
+Server::Server() {
+	std::locale::global(std::locale(""));
+};
 Server::~Server() {};
 bool Server::ServerStart() {
 
@@ -73,15 +75,20 @@ void Server::handle() {
 		}
 		//closesocket(m_server_socket);
 		SendFile();
-		closesocket(m_client_socket);
+		//closesocket(m_client_socket);
 	}
 };
 
 void Server::SendFile() {
-	file.open("picture.png", std::ios::binary | std::ios::ate);
+	file.open("picture.png", std::ios::binary | std::ios::in);
 	if (file.is_open()) {
+		
+		file.seekg(0, file.end);
 		long filesize = file.tellg();
+		file.seekg(0,file.beg);
+
 		char* buffer = new char[filesize];
+		file.read(buffer, filesize);
 		m_iResult = send(m_client_socket, buffer, filesize, 0);
 		if (m_iResult == SOCKET_ERROR) {
 			std::cout << "Send is failed. Error :" << WSAGetLastError() << std::endl;
@@ -89,6 +96,7 @@ void Server::SendFile() {
 			return;
 		}
 		else std::cout << "Sent bytes : " << m_iResult << std::endl;
+		std::cout << buffer;
 		m_iResult = shutdown(m_client_socket, SD_SEND);
 		if (m_iResult == SOCKET_ERROR)
 		{
@@ -100,4 +108,5 @@ void Server::SendFile() {
 		else delete[] buffer;
 	}
 	else std::cout << "File didn't open. Error :" << GetLastError() << std::endl;
+	file.close();
 }
