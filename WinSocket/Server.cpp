@@ -3,6 +3,7 @@
 #include "Server.h"
 #include <conio.h>
 #define PARTSIZE 200
+#define WSA_ACCEPT (WM_USER + 1)
 Server::Server() {};
 Server::~Server() {};
 bool Server::ServerStart() {
@@ -62,19 +63,21 @@ bool Server::ServerStop() {
 	return true;
 };
 void Server::handle() {
-	while (true) {
 		int addr_accept_len = sizeof(m_client_addr);
 		m_client_socket = accept(m_server_socket, (sockaddr*)&m_client_addr, &addr_accept_len);
 		if (m_client_socket == INVALID_SOCKET) {
 			std::cout << "Accept Error : " << WSAGetLastError() << std::endl;
 			closesocket(m_server_socket);
-			break;
+			return;
 		}
 		else {
 			std::cout << "Accepted.\n";
 			SendFile();
 		}
-	}
+		if (WSAAsyncSelect(m_server_socket, (HWND)GetCurrentProcess(), WSA_ACCEPT, FD_ACCEPT) > 0) {
+			std::cout << "WSAAsyncSelect Error : " << WSAGetLastError() << std::endl;
+			return;
+		}
 };
 
 void Server::SendFile() {
@@ -90,12 +93,11 @@ void Server::SendFile() {
 		if (filesize % PARTSIZE == 0) partnum = filesize / PARTSIZE;
 		else partnum = (filesize / PARTSIZE) + 1;
 
-		
 		//reading .png from file stream in buffer
 		char* buffer = new char[PARTSIZE];
 		for (unsigned int i = 0; i < partnum; ++i) {
 			
-			if (i != 3) request_size = PARTSIZE;
+			if (i != (partnum - 1)) request_size = PARTSIZE;
 			else  request_size = filesize - (i * PARTSIZE);
 			
 			file.seekg(position);

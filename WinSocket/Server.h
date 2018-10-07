@@ -7,6 +7,7 @@
 
 class Server {
 	WSADATA m_WSAData;
+	HWND hWnd;
 	SOCKET m_server_socket, m_client_socket;
 	sockaddr_in m_server_addr, m_client_addr;
 	unsigned short m_port = 8888;
