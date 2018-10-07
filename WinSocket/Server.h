@@ -12,6 +12,7 @@ class Server {
 	unsigned short m_port = 8888;
 	char m_LogBuffer[128];
 	char recvbuffer[512] = "";
+	int partnum = 0;
 public:
 	int m_iResult;
 	const char* sendbuf = nullptr;

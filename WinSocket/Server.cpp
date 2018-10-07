@@ -2,7 +2,7 @@
 #pragma comment(lib, "ws2_32.lib")
 #include "Server.h"
 #include <conio.h>
-
+#define PARTSIZE 200
 Server::Server() {};
 Server::~Server() {};
 bool Server::ServerStart() {
@@ -78,24 +78,43 @@ void Server::handle() {
 };
 
 void Server::SendFile() {
-	file.open("picture.png", std::ios::binary | std::ios::in);
+	static std::streampos position = 0;
+	static int sum = 0;
+	int request_size = 0;
+	file.open("picture.png", std::ios::binary | std::ios::ate | std::ios::in);
 	if (file.is_open()) {
 		// searcing begining of the file and its size
 		file.seekg(0, file.end);
 		long filesize = file.tellg();
-		file.seekg(0,file.beg);
-		//reading .png from file stream in buffer
-		char* buffer = new char[filesize];
-		file.read(buffer, filesize);
-		//sending binary to client
-		m_iResult = send(m_client_socket, buffer, filesize, 0);
 
-		if (m_iResult == SOCKET_ERROR) {
-			std::cout << "Send is failed. Error :" << WSAGetLastError() << std::endl;
-			delete[] buffer;
-			return;
+		if (filesize % PARTSIZE == 0) partnum = filesize / PARTSIZE;
+		else partnum = (filesize / PARTSIZE) + 1;
+
+		
+		//reading .png from file stream in buffer
+		char* buffer = new char[PARTSIZE];
+		for (unsigned int i = 0; i < partnum; ++i) {
+			
+			if (i != 3) request_size = PARTSIZE;
+			else  request_size = filesize - (i * PARTSIZE);
+			
+			file.seekg(position);
+			file.read(buffer, request_size);
+			position += request_size;
+			//sending binary to client
+			m_iResult = send(m_client_socket, buffer, request_size, 0);
+
+			if (m_iResult == SOCKET_ERROR) {
+				std::cout << "Send is failed. Error :" << WSAGetLastError() << std::endl;
+				delete[] buffer;
+				return;
+			}
+			else {
+				std::cout << "Sent bytes : " << m_iResult << std::endl;
+				sum += m_iResult;
+			}
 		}
-		else std::cout << "Sent bytes : " << m_iResult << std::endl;
+		std::cout << "Total bytes : " << sum << std::endl;
 		m_iResult = shutdown(m_client_socket, SD_SEND);
 		if (m_iResult == SOCKET_ERROR)
 		{
