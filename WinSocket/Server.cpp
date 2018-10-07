@@ -1,11 +1,9 @@
 #pragma warning(disable : 4996)
 #pragma comment(lib, "ws2_32.lib")
 #include "Server.h"
-#include <locale>
-#define UNICODE
-Server::Server() {
-	std::locale::global(std::locale(""));
-};
+#include <conio.h>
+
+Server::Server() {};
 Server::~Server() {};
 bool Server::ServerStart() {
 
@@ -65,7 +63,6 @@ bool Server::ServerStop() {
 };
 void Server::handle() {
 	while (true) {
-	
 		int addr_accept_len = sizeof(m_client_addr);
 		m_client_socket = accept(m_server_socket, (sockaddr*)&m_client_addr, &addr_accept_len);
 		if (m_client_socket == INVALID_SOCKET) {

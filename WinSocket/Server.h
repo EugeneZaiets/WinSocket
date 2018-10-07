@@ -10,14 +10,13 @@ class Server {
 	SOCKET m_server_socket, m_client_socket;
 	sockaddr_in m_server_addr, m_client_addr;
 	unsigned short m_port = 8888;
+	char m_LogBuffer[128];
+	char recvbuffer[512] = "";
 public:
 	int m_iResult;
 	const char* sendbuf = nullptr;
 	std::ifstream file;
-	FILE* testfile;
 	unsigned char key = 0;
-	char m_LogBuffer[128];
-	char recvbuffer[512] = "";
 	Server();
 	~Server();
 	bool ServerStart();
